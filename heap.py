@@ -1,4 +1,5 @@
 import sys
+import operator
 
 class Heap():
 
@@ -30,12 +31,20 @@ class Heap():
 	through the list.
 	'''
 
-	def __init__(self):
+	def __init__(self,type):
 		# the entire implementation is OBO if not for this dummy element
 		# We can choose not to use zero as dummy element to make 1-based array, otherwise,
 		# without this dummy element, left child is @ 2i+1, right child @ 2i+2
 		self.heap = [0] 
 		self.size = 0
+		self.type = type
+		if self.type == 'max':
+		    self.op = operator.lt
+		else :
+		    self.op = operator.gt
+		  
+	def compare(self,a,b):
+		return self.op(a,b)
 
 	''' Get top element, but doesn't remove it '''
 	def peek(self):
@@ -55,7 +64,9 @@ class Heap():
 		while child // 2 > 0:
 			# if key is less than its parent, do basic swap
 			# if not, we are done
-			if self.heap[child] <= self.heap[child // 2]:
+			#if self.heap[child] < self.heap[child // 2]:
+			
+			if not self.compare(self.heap[child] , self.heap[child // 2]):
 				self.swap(child//2, child)
 			else:
 				break
@@ -69,14 +80,15 @@ class Heap():
 	def heapifyDown(self, parent):
 		while (parent*2) <= len(self):
 		
-			minChild = self.getChildForSwap(parent)
+			Child = self.getChildForSwap(parent)
 			# if no need to swap, we are done rearranging heap
-			if self.heap[parent] > self.heap[minChild]:
-				self.swap(parent, minChild)
+			#if self.heap[parent] > self.heap[minChild]:
+			if self.compare(self.heap[parent] , self.heap[Child]):
+				self.swap(parent, Child)
 			else:
 				break
 
-			parent = minChild
+			parent = Child
 
 	'''
 	As we are rearranging the heap in a top-down fashion, we swap with the node that is minimum
@@ -89,7 +101,7 @@ class Heap():
 			return left # we return left child if right is None
 
 		#otherwise, we do comparison as normal and get min child
-		if self.heap[left] < self.heap[right]:
+		if not self.compare( self.heap[left] , self.heap[right] ):
 			return left
 		return right
 
@@ -97,12 +109,13 @@ class Heap():
 	def pop(self):
 		if self.isEmpty():
 			return
-		minimum = self.peek()
+		#minimum = self.peek()
+		candidate = self.peek()
 		self.swap(1,-1) # swap first and last element
 		self.heap.pop()
 		self.size -= 1
 		self.heapifyDown(1)
-		return minimum
+		return candidate
 
 	def isEmpty(self):
 		return self.size == 0 # 1 for our dummy element
@@ -161,7 +174,7 @@ class Heap():
 	Exhaustively traverse entire heap to ensure every subtree is ordered properly
 	quits upon first error. We can use index=startIndex and size= heapsize/2.
 	'''
-	def isHeapRec(self, index, size):
+	def isminHeapRec(self, index, size):
 		if index >= size:
 			return True
 		node = self.heap[index]
@@ -169,7 +182,21 @@ class Heap():
 		# so our statement is true if either or both children are None
 		left = self.heap[2*index] if 2*index < size else sys.maxint
 		right = self.heap[2*index+1] if 2*index+1 < size else sys.maxint
-		return left >= node and right >= node and self.isHeapRec(2*index, size) and self.isHeapRec(2*index+1, size)
+		return left >= node and right >= node and self.isminHeapRec(2*index, size) and self.isminHeapRec(2*index+1, size)
+	      
+	def ismaxHeapRec(self, index, size):
+		if index >= size:
+			return True
+		node = self.heap[index]
+		# if either left or right are None, we have sys.maxint as the default value
+		# so our statement is true if either or both children are None
+		inf = -sys.maxint - 1
+		left = self.heap[2*index] if 2*index < size else inf
+		right = self.heap[2*index+1] if 2*index+1 < size else inf
+		return left <= node and right <= node and self.ismaxHeapRec(2*index, size) and self.ismaxHeapRec(2*index+1, size)
 
 	def isHeap(self):
-		return self.isHeapRec(1, len(self)/2+1)
+		if self.type == 'max':
+			return self.ismaxHeapRec(1, len(self)/2+1)
+		else :
+			return self.isminHeapRec(1, len(self)/2+1)
