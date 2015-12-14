@@ -3,14 +3,14 @@ import random
 import sys
 
 
-''' We build an arbitrarily large heap, delete the minimum, and after every deletion
+''' We build an arbitrarily large heap, delete the maximum, and after every deletion
 	we check whether the heap is still a heap. This is exhaustive, and not advisable
 	in practice, but it's just a brute force way to be ruthless.
 
 	heapifyUp(index) runs every time we insert a key
 	heapifyDown(index) runs every time we delete a key (h.pop())
-	we verify that h.pop() works by popping off minimum is actually minimum
-	- then set minimum equal to just popped element
+	we verify that h.pop() works by popping off maximum is actually mamimum
+	- then set mamimum equal to just popped element
 	h.pop() uses h.peek()
 '''
 def deleteAllAndRearrange(keys, size):
@@ -37,7 +37,6 @@ def isHeapBuiltCorrectly(keys, trials):
 		h.buildHeap(keys)
 		assert(h.isHeap())
 
-# can we make a valid heap with an array full of duplicates?
 def duplicates(keys):
 	deleteAllAndRearrange(keys, 0)
 

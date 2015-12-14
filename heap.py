@@ -3,19 +3,6 @@ import operator
 
 class Heap():
 
-	# Fast, efficient, binary heap, built on top of list
-	# minimum heap by default
-
-	#@staticmethod
-	#def maxheap(a,b):
-	#	return a > b
-
-	#def minheap(a,b):
-	#	return a < b
-
-	#TODO - add support for maxheap
-
-
 	'''
 	We build the heap as a complete binary tree, with list as internal representation.
 	The representation is as follows:
@@ -38,6 +25,8 @@ class Heap():
 		self.heap = [0] 
 		self.size = 0
 		self.type = type
+		if type!='max' and type!='min':
+		    raise Exception('Type of heap has to be either min or max')
 		if self.type == 'max':
 		    self.op = operator.lt
 		else :
